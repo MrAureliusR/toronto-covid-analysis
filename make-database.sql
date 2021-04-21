@@ -45,7 +45,7 @@ CREATE TABLE covid AS SELECT
   CAST("Classification" AS TEXT) AS classification,
   DATE("Episode Date") AS episode_date,
   DATE("Reported Date") AS reported_date,
-  CAST("Gender" AS TEXT) AS gender,
+  CAST("Client Gender" AS TEXT) AS gender,
   CAST("Outcome" AS TEXT) AS outcome,
   CAST(IIF("Currently Hospitalized" = "Yes", 1, 0) AS INTEGER) AS hospitalized_current,
   CAST(IIF("Currently in ICU" = "Yes", 1, 0) AS INTEGER) AS icu_current,
