@@ -4,8 +4,8 @@
 .mode csv
 
 -- Census data giving population by postal code prefix.
-DROP TABLE IF EXISTS census;
-CREATE TABLE census(
+DROP TABLE IF EXISTS Census;
+CREATE TABLE Census(
   geocode TEXT NOT NULL,
   geoname TEXT NOT NULL,
   region TEXT NOT NULL,
@@ -23,23 +23,22 @@ CREATE TABLE census(
 );
 
 -- skip two lines to get rid of titles and summary for all of Canada
-.import canada-census-data-2016.csv census --skip 2
+.import canada-census-data-2016.csv Census --skip 2
 
--- Get rid of unused columns.
-ALTER TABLE census DROP COLUMN geoname;
-ALTER TABLE census DROP COLUMN reserves;
+-- Get rid of unneeded columns in census data.
+ALTER TABLE Census DROP COLUMN geoname;
+ALTER TABLE Census DROP COLUMN reserves;
 
 -- Raw City of Toronto data.
-DROP TABLE IF EXISTS covid_temp;
-.import toronto-covid19-2021-04-19.csv covid_temp
+DROP TABLE IF EXISTS Covid_Temp;
+.import toronto-covid19-2021-04-19.csv Covid_Temp
 
 -- Translate.
-DROP TABLE IF EXISTS covid;
-CREATE TABLE covid AS SELECT
+DROP TABLE IF EXISTS Covid;
+CREATE TABLE Covid AS SELECT
   CAST(_id AS INTEGER) AS event_id,
   CAST("Outbreak Associated" AS TEXT) AS outbreak_associated,
   CAST("Age Group" AS TEXT) AS age_group,
-  CAST("Neighbourhood Name" AS TEXT) AS neighborhood,
   CAST("FSA" AS TEXT) AS geocode,
   CAST("Source of Infection" AS TEXT) AS source,
   CAST("Classification" AS TEXT) AS classification,
@@ -53,17 +52,23 @@ CREATE TABLE covid AS SELECT
   CAST(IIF("Ever Hospitalized" = "Yes", 1, 0) AS INTEGER) AS hospitalized_ever,
   CAST(IIF("Ever in ICU" = "Yes", 1, 0) AS INTEGER) AS icu_ever,
   CAST(IIF("Ever Intubated" = "Yes", 1, 0) AS INTEGER) AS intubated_ever
-FROM covid_temp;
-
--- Get rid of temporary table.
-DROP TABLE covid_temp;
+FROM Covid_Temp;
 
 -- Tidy up sub-categorization of outbreak types.
-UPDATE covid SET source = CASE
+UPDATE Covid SET source = CASE
   WHEN source = "Outbreaks, Congregate Settings" THEN "Congregate Settings"
   WHEN source = "Outbreaks, Healthcare Institutions" THEN "Healthcare Institutions"
   WHEN source = "Outbreaks, Other Settings" THEN "Other Settings"
   ELSE source
 END;
 
+-- Create table of neighborhoods.
+DROP TABLE IF EXISTS Neighborhood;
+CREATE TABLE Neighborhood AS SELECT DISTINCT
+  CAST("Neighbourhood Name" AS TEXT) AS name,
+  CAST("FSA" AS TEXT) AS geocode
+FROM Covid_Temp
+WHERE "Neighbourhood Name" != "";
 
+-- Get rid of temporary table.
+DROP TABLE Covid_Temp;
