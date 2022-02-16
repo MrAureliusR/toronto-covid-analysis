@@ -4,8 +4,24 @@ This repository holds data files, scripts, and other material used to
 teach database operations by analyzing COVID-19 data from the City of
 Toronto.
 
-For details on the raw census data see toronto-covid19-2021-04-19.md.
-For details on the raw COVID-19 data see toronto-covid19-2021-04-19.md.
+This was updated on February 16th, 2022 with the latest data from the
+City of Toronto Open Data website.
+
+# USAGE
+
+To use this project, you must have sqlite3 installed. This is available
+from almost all distro's repos. Run `sqlite3 toronto-covid19.db` and then
+issue `.read make-database.sql`. This will take at least 5-10 seconds, depending
+on the speed of your CPU & disk. 
+
+## Querying
+
+To query, for example, all cases in the postal code 'M1L', issue
+`SELECT * FROM Covid WHERE geocode LIKE 'M1L';`
+
+The real power of having this data in a SQLite database is connecting
+it to other software that can analyze & visualize the data in a
+meaningful way.
 
 ## Table `census`
 

@@ -31,7 +31,7 @@ ALTER TABLE Census DROP COLUMN reserves;
 
 -- Raw City of Toronto data.
 DROP TABLE IF EXISTS Covid_Temp;
-.import toronto-covid19-2021-04-19.csv Covid_Temp
+.import toronto-covid19-2022-02-16.csv Covid_Temp
 
 -- Translate.
 DROP TABLE IF EXISTS Covid;
